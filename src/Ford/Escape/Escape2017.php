@@ -4,6 +4,6 @@ class Escape2017
 {
     public static function info()
     {
-        echo "This is Ford Escape2020!<br />";
+        echo "This is Ford 1234123123412341234!<br />";
     }
 }
