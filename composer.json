@@ -1,0 +1,19 @@
+{
+    "name": "lyndn/composer-car",
+    "description": "this a demo",
+    "type": "library",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Yan Chao",
+            "email": "yanchao563@yahoo.com"
+        }
+    ],
+    "minimum-stability": "dev",
+    "require": {},
+    "autoload": {
+        "psr-4": {
+            "Ford\\Escape\\": "src/Ford/Escape"
+        }
+    }
+}
