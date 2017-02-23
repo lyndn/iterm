@@ -13,7 +13,8 @@
     "require": {},
     "autoload": {
         "psr-4": {
-            "Koiterm\\Init\\": "src/Koiterm/Init"
+            "Koiterm\\Init\\": "src/Koiterm/Init",
+            "Koiterm\\Inc\\": "src/Koiterm/Inc"
         }
     }
 }
