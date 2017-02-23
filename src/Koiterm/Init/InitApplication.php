@@ -16,6 +16,6 @@ namespace Koiterm\Init;
 class InitApplication
 {
     public static function info(){
-        return "hello world! hyancha ";
+        return "hello world!";
     }
 }

@@ -1,2 +1,1 @@
-# iterm
-轻框架
+# koiterm
