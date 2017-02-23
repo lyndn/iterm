@@ -1,6 +1,6 @@
 {
-    "name": "lyndn/composer-car",
-    "description": "this a demo",
+    "name": "yanchao/koiterm",
+    "description": "This is a custom light mvc frame!",
     "type": "library",
     "license": "MIT",
     "authors": [
@@ -10,10 +10,12 @@
         }
     ],
     "minimum-stability": "dev",
-    "require": {},
+    "require": {
+        "php":">=5.3.*"
+    },
     "autoload": {
         "psr-4": {
-            "Ford\\Escape\\": "src/Ford/Escape"
+            "Koiterm\\Init\\": "src/Koiterm/Init"
         }
     }
 }
