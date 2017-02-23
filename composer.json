@@ -10,9 +10,7 @@
         }
     ],
     "minimum-stability": "dev",
-    "require": {
-        "php":">=5.3.*"
-    },
+    "require": {},
     "autoload": {
         "psr-4": {
             "Koiterm\\Init\\": "src/Koiterm/Init"
