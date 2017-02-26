@@ -54,7 +54,9 @@ class Core
     protected static function _makeModel($name='', $type='', $p = array())
     {
         $cname = $type.$name;
-        $cname = "\Koiterm\Models\\$cname";
+        if(file_exists(__DIR__ . '/../../Koiterm/Models/' .$name .'.php')){
+            $cname = "\Koiterm\Models\\$cname";
+        }
         if(!isset(self::$_tables[$cname])) {
             self::$_tables[$cname] = new $cname();
         }
