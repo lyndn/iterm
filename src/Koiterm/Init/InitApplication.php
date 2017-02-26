@@ -220,7 +220,7 @@ class InitApplication
     }
 
     private function _initSetting() {
-        if($this->init_setting) {
+        if($this->init_setting && $this->init_db) {
             if(empty($this->var['setting'])) {
                 $this->cachelist[] = 'setting';
             }
