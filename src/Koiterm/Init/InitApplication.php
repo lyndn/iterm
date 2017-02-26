@@ -12,10 +12,25 @@
 
 namespace Koiterm\Init;
 use Koiterm\Inc\CommonFunc;
-
+use Koiterm\Config\GlobalCfg;
+use Koiterm\Orm\Db as DB;
+use Koiterm\Base\WeixinBaseApi as wx_base;
 class InitApplication
 {
     var $var = array();
+    var $config =array();
+    var $cachelist = array();
+    var $init_db = true;
+    var $init_setting = true;
+    var $init_user = true;
+    var $init_session = true;
+    var $init_cron = true;
+    var $init_misc = true;
+    var $init_mobile = true;
+    var $init_wx = true;
+
+    var $initated = false;
+
     var $superglobal = array(
         'GLOBALS' => 1,
         '_GET' => 1,
@@ -26,12 +41,204 @@ class InitApplication
         '_ENV' => 1,
         '_FILES' => 1,
     );
-
-    public function __construct()
+    public function __construct($cfg = '')
     {
         $this->_initEnv();
+        $this->_initConfig();
         $this->_initInput();
         $this->_initOutput();
+    }
+    public function init() {
+        if(!$this->initated) {
+            $this->_initDb();
+            $this->_initSetting();
+            $this->_initWeixin();
+            $this->_initMobile();
+            $this->_initMisc();
+        }
+        $this->initated = true;
+    }
+
+    private function _initWeixin() {
+        $openid = null;
+        if($this->init_wx){
+            $openid = wx_base::get_userid();
+            if(isset($_SESSION['wx_info']) || isset($_COOKIE['wx_info'])){
+                $wx_info = unserialize($_SESSION['wx_info'] ? $_SESSION['wx_info'] : $_COOKIE['wx_info']);
+            }else if(isset($openid)){
+                $wx_info = wx_base::get_user_info($openid);
+                $s = serialize($wx_info);
+                setcookie("wx_info", $s, time()+360000000);
+                $_SESSION['wx_info'] = $s;
+                CommonFunc::setglobal('wx_info', $wx_info);
+            }else{
+                return NULL;
+            }
+        }
+    }
+
+
+    private function _xssCheck() {
+
+        static $check = array('"', '>', '<', '\'', '(', ')', 'CONTENT-TRANSFER-ENCODING');
+
+        if(isset($_GET['formhash']) && $_GET['formhash'] !== formhash()) {
+            exit('request_tainting');
+        }
+
+        if($_SERVER['REQUEST_METHOD'] == 'GET' ) {
+            $temp = $_SERVER['REQUEST_URI'];
+        } elseif(empty ($_GET['formhash'])) {
+            $temp = $_SERVER['REQUEST_URI'].file_get_contents('php://input');
+        } else {
+            $temp = '';
+        }
+
+        if(!empty($temp)) {
+            $temp = strtoupper(urldecode(urldecode($temp)));
+            foreach ($check as $str) {
+                if(strpos($temp, $str) !== false) {
+                    exit('request_tainting');
+                }
+            }
+        }
+
+        return true;
+    }
+
+    private function _initMisc() {
+        if($this->config['security']['urlxssdefend'] && !defined('DISABLEXSSCHECK')) {
+            $this->_xssCheck();
+        }
+        if(!$this->init_misc) {
+            return false;
+        }
+        $this->var['formhash'] = CommonFunc::formhash();
+        define('FORMHASH', $this->var['formhash']);
+    }
+
+    private function _initMobile() {
+        if(!$this->init_mobile) {
+            return false;
+        }
+
+        if(!$this->var['setting'] || !$this->var['setting']['mobile']['allowmobile'] || !is_array($this->var['setting']['mobile']) || IS_ROBOT) {
+            $nomobile = true;
+            $unallowmobile = true;
+        }
+
+        $mobile = CommonFunc::getgpc('mobile');
+        $mobileflag = isset($this->var['mobiletpl'][$mobile]);
+        if($mobile === 'no') {
+            dsetcookie('mobile', 'no', 3600);
+            $nomobile = true;
+        } elseif($this->var['cookie']['mobile'] == 'no' && $mobileflag) {
+            checkmobile();
+            dsetcookie('mobile', '');
+        } elseif($this->var['cookie']['mobile'] == 'no') {
+            $nomobile = true;
+        } elseif(!($mobile_ = CommonFunc::checkmobile())) {
+            $nomobile = true;
+        }
+        if(!$mobile || $mobile == 'yes') {
+            $mobile = isset($mobile_) ? $mobile_ : 2;
+        }
+
+        if($nomobile || (!$this->var['setting']['mobile']['mobileforward'] && !$mobileflag)) {
+            if($_SERVER['HTTP_HOST'] == $this->var['setting']['domain']['app']['mobile'] && $this->var['setting']['domain']['app']['default']) {
+                CommonFunc::dheader("Location:http://".$this->var['setting']['domain']['app']['default'].$_SERVER['REQUEST_URI']);
+                return false;
+            } else {
+                return false;
+            }
+        }
+        if(strpos($this->var['setting']['domain']['defaultindex'],  curscript) !== false && curscript != 'blog' && !$_GET['mod']) {
+            if($this->var['setting']['domain']['app']['mobile']) {
+                $mobileurl = 'http://'.$this->var['setting']['domain']['app']['mobile'];
+            } else {
+                if($this->var['setting']['domain']['app']['forum']) {
+                    $mobileurl = 'http://'.$this->var['setting']['domain']['app']['forum'].'?mobile=yes';
+                } else {
+                    $mobileurl = $this->var['siteurl'].'forum.php?mobile=yes';
+                }
+            }
+            CommonFunc::dheader("location:$mobileurl");
+        }
+        if($mobile === '3' && empty($this->var['setting']['mobile']['wml'])) {
+            return false;
+        }
+        define('IN_MOBILE', isset($this->var['mobiletpl'][$mobile]) ? $mobile : '2');
+        CommonFunc::setglobal('gzipcompress', 0);
+
+        $arr = array();
+        foreach(array_keys($this->var['mobiletpl']) as $mobiletype) {
+            $arr[] = '&mobile='.$mobiletype;
+            $arr[] = 'mobile='.$mobiletype;
+        }
+        $arr = array_merge(array(strstr($_SERVER['QUERY_STRING'], '&simpletype'), strstr($_SERVER['QUERY_STRING'], 'simpletype')), $arr);
+        $query_sting_tmp = str_replace($arr, '', $_SERVER['QUERY_STRING']);
+        $this->var['setting']['mobile']['nomobileurl'] = ($this->var['setting']['domain']['app']['forum'] ? 'http://'.$this->var['setting']['domain']['app']['forum'].'/' : $this->var['siteurl']).$this->var['basefilename'].($query_sting_tmp ? '?'.$query_sting_tmp.'&' : '?').'mobile=no';
+
+        $this->var['setting']['lazyload'] = 0;
+
+        if('utf-8' != CHARSET) {
+            if(strtolower($_SERVER['REQUEST_METHOD']) === 'post') {
+                foreach($_POST AS $pk => $pv) {
+                    if(!is_numeric($pv)) {
+                        $_GET[$pk] = $_POST[$pk] = $this->mobile_iconv_recurrence($pv);
+                        if(!empty($this->var['config']['input']['compatible'])) {
+                            $this->var['gp_'.$pk] = daddslashes($_GET[$pk]);
+                        }
+                    }
+                }
+            }
+        }
+
+
+        if(!$this->var['setting']['mobile']['mobilesimpletype']) {
+            $this->var['setting']['imagemaxwidth'] = 224;
+        }
+
+        $this->var['setting']['regstatus'] = $this->var['setting']['mobile']['mobileregister'] ? $this->var['setting']['regstatus'] : 0 ;
+
+        $this->var['setting']['thumbquality'] = 50;
+        $this->var['setting']['avatarmethod'] = 0;
+
+        $this->var['setting']['mobile']['simpletypeurl'] = array();
+        $this->var['setting']['mobile']['simpletypeurl'][0] = $this->var['siteurl'].$this->var['basefilename'].($query_sting_tmp ? '?'.$query_sting_tmp.'&' : '?').'mobile=1&simpletype=no';
+        $this->var['setting']['mobile']['simpletypeurl'][1] =  $this->var['siteurl'].$this->var['basefilename'].($query_sting_tmp ? '?'.$query_sting_tmp.'&' : '?').'mobile=1&simpletype=yes';
+        $this->var['setting']['mobile']['simpletypeurl'][2] =  $this->var['siteurl'].$this->var['basefilename'].($query_sting_tmp ? '?'.$query_sting_tmp.'&' : '?').'mobile=2';
+        unset($query_sting_tmp);
+        ob_start();
+    }
+
+    private function _initDb() {
+        if($this->init_db) {
+            $driver = function_exists('mysql_connect') ? 'DriverMysql' : 'DriverMysqli';
+            DB::init($driver, $this->config['db']);
+        }
+    }
+
+    private function _initSetting() {
+        if($this->init_setting) {
+            if(empty($this->var['setting'])) {
+                $this->cachelist[] = 'setting';
+            }
+
+            if(empty($this->var['style'])) {
+                $this->cachelist[] = 'style_default';
+            }
+
+            if(!isset($this->var['cache']['cronnextrun'])) {
+                $this->cachelist[] = 'cronnextrun';
+            }
+        }
+
+        !empty($this->cachelist) && CommonFunc::loadcache($this->cachelist);
+
+        if(!is_array($this->var['setting'])) {
+            $this->var['setting'] = array();
+        }
     }
 
     static function &instance() {
@@ -83,7 +290,17 @@ class InitApplication
             @date_default_timezone_set('Etc/GMT'.($timeoffset > 0 ? '-' : '+').(abs($timeoffset)));
         }
     }
-
+    private function _initConfig() {
+        $_config = GlobalCfg::getCfg();
+        if(empty($_config)) {
+            exit('config_notfound');
+        }
+        if(empty($_config['security']['authkey'])) {
+            $_config['security']['authkey'] = md5($_config['cookie']['cookiepre'].$_config['db'][1]['dbname']);
+        }
+        $this->config = & $_config;
+        $this->var['config'] = & $_config;
+    }
     private function _initEnv()
     {
         error_reporting(E_ERROR);

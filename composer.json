@@ -14,7 +14,12 @@
     "autoload": {
         "psr-4": {
             "Koiterm\\Init\\": "src/Koiterm/Init",
-            "Koiterm\\Inc\\": "src/Koiterm/Inc"
+            "Koiterm\\Inc\\": "src/Koiterm/Inc",
+            "Koiterm\\Base\\": "src/Koiterm/Base",
+            "Koiterm\\Config\\": "src/Koiterm/Config",
+            "Koiterm\\Memory\\": "src/Koiterm/Memory",
+            "Koiterm\\Models\\": "src/Koiterm/Models",
+            "Koiterm\\Orm\\": "src/Koiterm/Orm"
         }
     }
 }
