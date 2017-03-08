@@ -15,7 +15,6 @@ namespace Koiterm\Orm;
 class Ormdatabase {
 
     public static $db;
-
     public static $driver;
 
     public static function init($driver, $config) {

@@ -9,16 +9,45 @@
  * @license   www.guanlunsm.com license
  * @link      yanchao563@yahoo.com
  */
-
 namespace Koiterm\Init;
 use Koiterm\Init\InitApplication;
 use Koiterm\Memory\BaseMemory;
 use Koiterm\Models;
+use Koiterm\Base\KoError;
 class Core
 {
     private static $_app;
     private static $_tables;
     private static $_memory;
+    const ashu_core_debug = true;
+    const ashu_table_extendable = true;
+    const in_ashu = true;
+    public function __construct()
+    {
+        error_reporting(E_ALL);
+        define('ashu_root',substr(dirname(__FILE__),0,-12));
+        set_exception_handler(array('\Koiterm\Init\Core','handleException'));
+        if(ashu_core_debug){
+            set_error_handler(array('\Koiterm\Init\Core','handleError'));
+            register_shutdown_function(array('\Koiterm\Init\Core', 'handleShutdown'));
+        }
+    }
+
+    public static function handleException($exception) {
+        KoError::exception_error($exception);
+    }
+
+    public static function handleError($errno, $errstr, $errfile, $errline) {
+        if($errno & self::ashu_core_debug) {
+            KoError::system_error($errstr, false, true, false);
+        }
+    }
+
+    public static function handleShutdown() {
+        if(($error = error_get_last()) && $error['type'] & self::ashu_core_debug) {
+            KoError::system_error($error['message'], false, true, false);
+        }
+    }
 
     public static function app() {
         return self::$_app;

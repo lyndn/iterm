@@ -361,7 +361,9 @@ class InitApplication
         $_G['PHP_SELF'] = CommonFunc::dhtmlspecialchars($this->_getScriptUrl());
         $_G['basefilename'] = basename($_G['PHP_SELF']);
         $sitepath = substr($_G['PHP_SELF'], 0, strrpos($_G['PHP_SELF'], '/'));
-
+        if(empty($_SERVER['HTTPS'])){
+            $_SERVER['HTTPS'] = 'off';
+        }
         $_G['isHTTPS'] = ($_SERVER['SERVER_PORT'] == 443 || $_SERVER['HTTPS'] || strtolower($_SERVER['HTTPS']) != 'off') ? true : false;
         $_G['siteurl'] = CommonFunc::dhtmlspecialchars('http'.($_G['isHTTPS'] ? 's' : '').'://'.$_SERVER['HTTP_HOST'].$sitepath.'/');
         $url = parse_url($_G['siteurl']);

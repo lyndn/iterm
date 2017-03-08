@@ -20,7 +20,7 @@ class CommonFunc
      * 读取缓存
      * @param $cachenames - 缓存名称数组或字串
      */
-    function loadcache($cachenames, $force = false) {
+    public static function loadcache($cachenames, $force = false) {
         global $_G;
         static $loadedcache = array();
         $cachenames = is_array($cachenames) ? $cachenames : array($cachenames);
@@ -50,7 +50,7 @@ class CommonFunc
     }
 
     /* 检查是否是微信浏览器访问 */
-    function is_wechat_browser(){
+    public static function is_wechat_browser(){
         $user_agent = $_SERVER['HTTP_USER_AGENT'];
         if (strpos($user_agent, 'MicroMessenger') === false){
             return false;
@@ -59,11 +59,11 @@ class CommonFunc
         }
     }
 
-    function getwxconfig(){
+    public static function getwxconfig(){
         return C::t('wechat_config')->fetch(1);
     }
 
-    function getuserbyuid($uid) {
+    public static function getuserbyuid($uid) {
         static $users = array();
         if(empty($users[$uid])) {
             $users[$uid] = C::t('common_member')->fetch_by_openid($uid);
@@ -85,7 +85,7 @@ class CommonFunc
      *
      * @return type
      */
-    function getglobal($key, $group = null) {
+    public static function getglobal($key, $group = null) {
         global $_G;
         $key = explode('/', $group === null ? $key : $group.'/'.$key);
         $v = &$_G;
@@ -115,7 +115,7 @@ class CommonFunc
      * @example rm : 删除内存  $ret = memory('rm', 'test')
      * @example check : 检查内存功能是否可用 $allow = memory('check')
      */
-    function memory($cmd, $key='', $value='', $ttl = 0, $prefix = '') {
+    public static function memory($cmd, $key='', $value='', $ttl = 0, $prefix = '') {
         if($cmd == 'check') {
             return  C::memory()->enable ? C::memory()->type : '';
         } elseif(C::memory()->enable && in_array($cmd, array('set', 'get', 'rm', 'inc', 'dec'))) {
@@ -138,7 +138,7 @@ class CommonFunc
      * @return bool
      */
 
-    function dstrpos($string, $arr, $returnvalue = false) {
+    public static function dstrpos($string, $arr, $returnvalue = false) {
         if(empty($string)) return false;
         foreach((array)$arr as $v) {
             if(strpos($string, $v) !== false) {
@@ -153,7 +153,7 @@ class CommonFunc
      * @param $string
      * @return array|string
      */
-    function dstripslashes($string) {
+    public static function dstripslashes($string) {
         if(empty($string)) return $string;
         if(is_array($string)) {
             foreach($string as $key => $val) {
@@ -171,7 +171,7 @@ class CommonFunc
      * @param $flags 参见手册 htmlspecialchars
      * @return 返回转义好的字符串
      */
-    public function dhtmlspecialchars($string, $flags = null) {
+    public static function dhtmlspecialchars($string, $flags = null) {
         if(is_array($string)) {
             foreach($string as $key => $val) {
                 $string[$key] = dhtmlspecialchars($val, $flags);
@@ -199,7 +199,7 @@ class CommonFunc
         return $string;
     }
 
-    function getgpc($k, $type='GP') {
+    public static function getgpc($k, $type='GP') {
         $type = strtoupper($type);
         switch($type) {
             case 'G': $var = &$_GET; break;
@@ -231,7 +231,7 @@ class CommonFunc
      * setglobal('config/test/abc') = 2; //$_G['config']['test']['abc'] = 2;
      *
      */
-    function setglobal($key , $value, $group = null) {
+    public static function setglobal($key , $value, $group = null) {
         global $_G;
         $key = explode('/', $group === null ? $key : $group.'/'.$key);
         $p = &$_G;
@@ -246,7 +246,7 @@ class CommonFunc
     }
 
 
-    function dheader($string, $replace = true, $http_response_code = 0) {
+    public static function dheader($string, $replace = true, $http_response_code = 0) {
         $islocation = substr(strtolower(trim($string)), 0, 8) == 'location';
         if(defined('IN_MOBILE') && strpos($string, 'mobile') === false && $islocation) {
             if (strpos($string, '?') === false) {
@@ -272,7 +272,7 @@ class CommonFunc
         }
     }
 
-    function checkmobile() {
+    public static function checkmobile() {
         global $_G;
         $mobile = array();
         static $touchbrowser_list =array('iphone', 'android', 'phone', 'mobile', 'wap', 'netfront', 'java', 'opera mobi', 'opera mini',
@@ -312,7 +312,7 @@ class CommonFunc
         }
     }
 
-    public function checkrobot($useragent = '') {
+    public static function checkrobot($useragent = '') {
         static $kw_spiders = array('bot', 'crawl', 'spider' ,'slurp', 'sohu-search', 'lycos', 'robozilla');
         static $kw_browsers = array('msie', 'netscape', 'opera', 'konqueror', 'mozilla');
 
@@ -322,7 +322,7 @@ class CommonFunc
         return false;
     }
 
-    function formhash($specialadd = '') {
+    public static function formhash($specialadd = '') {
         global $_G;
         $hashadd = defined('IN_ADMINCP') ? 'Only For Ashu! Admin YanChao' : '';
         return substr(md5(substr($_G['timestamp'], 0, -7).$_G['username'].$_G['uid'].$_G['authkey'].$hashadd.$specialadd), 8, 8);

@@ -1,11 +1,11 @@
 <?php
 namespace Koiterm\Config;
 class GlobalCfg{
-    var $config;
-    public function getCfg()
+    static $config;
+    public static function getCfg()
     {
-        $_config = array();
-        $this->config = &$_config;
+        static $_config = array();
+        self::$config = &$_config;
 // ----------------------------  CONFIG DB  ----------------------------- //
         $_config['db']['1']['dbhost'] = 'localhost:8889';
         $_config['db']['1']['dbuser'] = 'root';
@@ -105,6 +105,6 @@ class GlobalCfg{
         $_config['wx']['appsecret'] = '447daefb28de157dc8dff7163f0b2e07';
 
 // -------------------  THE END  -------------------- //
-        return $this->config;
+        return self::$config;
     }
 }
