@@ -678,4 +678,91 @@ class CommonFunc
         $hashadd = defined('IN_ADMINCP') ? 'Only For Ashu! Admin YanChao' : '';
         return substr(md5(substr($_G['timestamp'], 0, -7).$_G['username'].$_G['uid'].$_G['authkey'].$hashadd.$specialadd), 8, 8);
     }
+<<<<<<< HEAD
+=======
+
+    /**
+     * 格式化时间
+     * @param $timestamp - 时间戳
+     * @param $format - dt=日期时间 d=日期 t=时间 u=个性化 其他=自定义
+     * @param $timeoffset - 时区
+     * @return string
+     */
+
+    /**
+     * 格式化时间
+     * @param $timestamp - 时间戳
+     * @param $format - dt=日期时间 d=日期 t=时间 u=个性化 其他=自定义
+     * @param $timeoffset - 时区
+     * @return string
+     */
+    public static function dgmdate($timestamp, $format = 'dt', $timeoffset = '9999', $uformat = '') {
+        global $_G;
+        $_G['setting']['dateconvert'] = "1";
+        $format == 'u' && !$_G['setting']['dateconvert'] && $format = 'dt';
+        static $dformat, $tformat, $dtformat, $offset, $lang;
+        if($dformat === null) {
+            $dformat = "Y-n-j";
+            $tformat = 'H:i';
+            $dtformat = $dformat.' '.$tformat;
+            $offset = "8";
+            $sysoffset = "8";
+            $offset = $offset == 9999 ? ($sysoffset ? $sysoffset : 0) : $offset;
+            $lang = array(
+                'before' => '前',
+                'day' => '天',
+                'yday' => '昨天',
+                'byday' => '前天',
+                'hour' => '小时',
+                'half' => '半',
+                'min' => '分钟',
+                'sec' => '秒',
+                'now' => '刚刚',
+            );
+        }
+        $timeoffset = $timeoffset == 9999 ? $offset : $timeoffset;
+        $timestamp += $timeoffset * 3600;
+        $format = empty($format) || $format == 'dt' ? $dtformat : ($format == 'd' ? $dformat : ($format == 't' ? $tformat : $format));
+        if($format == 'u') {
+            $todaytimestamp = TIMESTAMP - (TIMESTAMP + $timeoffset * 3600) % 86400 + $timeoffset * 3600;
+            $s = gmdate(!$uformat ? $dtformat : $uformat, $timestamp);
+            $time = TIMESTAMP + $timeoffset * 3600 - $timestamp;
+            if($timestamp >= $todaytimestamp) {
+                if($time > 3600) {
+                    $return = intval($time / 3600).'&nbsp;'.$lang['hour'].$lang['before'];
+                } elseif($time > 1800) {
+                    $return = $lang['half'].$lang['hour'].$lang['before'];
+                } elseif($time > 60) {
+                    $return = intval($time / 60).'&nbsp;'.$lang['min'].$lang['before'];
+                } elseif($time > 0) {
+                    $return = $time.'&nbsp;'.$lang['sec'].$lang['before'];
+                } elseif($time == 0) {
+                    $return = $lang['now'];
+                } else {
+                    $return = $s;
+                }
+                if($time >=0 && !defined('IN_MOBILE')) {
+                    $return = '<span title="'.$s.'">'.$return.'</span>';
+                }
+            } elseif(($days = intval(($todaytimestamp - $timestamp) / 86400)) >= 0 && $days < 7) {
+                if($days == 0) {
+                    $return = $lang['yday'].'&nbsp;'.gmdate($tformat, $timestamp);
+                } elseif($days == 1) {
+                    $return = $lang['byday'].'&nbsp;'.gmdate($tformat, $timestamp);
+                } else {
+                    $return = ($days + 1).'&nbsp;'.$lang['day'].$lang['before'];
+                }
+                if(!defined('IN_MOBILE')) {
+                    $return = '<span title="'.$s.'">'.$return.'</span>';
+                }
+            } else {
+                $return = $s;
+            }
+            return $return;
+        } else {
+            return gmdate($format, $timestamp);
+        }
+    }
+
+>>>>>>> 45b0e9c100327e621cc7b24dbc88f16e08a864e5
 }

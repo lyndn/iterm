@@ -43,6 +43,7 @@ class InitApplication
     );
     public function __construct($cfg = '')
     {
+        error_reporting(E_ALL || ~E_NOTICE);
         $this->_initEnv();
         $this->_initConfig();
         $this->_initInput();

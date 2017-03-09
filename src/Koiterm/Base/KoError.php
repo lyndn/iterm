@@ -12,7 +12,7 @@ class KoError
 
         if($save) {
             $messagesave = '<b>'.$message.'</b><br><b>PHP:</b>'.$logtrace;
-            //KoError::write_error_log($messagesave);
+            KoError::write_error_log($messagesave);
         }
 
         if(!defined('IN_MOBILE')) {
@@ -21,8 +21,44 @@ class KoError
             KoError::mobile_show_error('system', "<li>$message</li>", $showtrace, 0);
         }
     }
-    
-    
+
+    public static function write_error_log($message)
+    {
+        global $_G;
+        $file = $_G['config']['log']['filepath'];
+        if(isset($file)){
+            $message = KoError::clear($message);
+            $time = time();
+            $hash = md5($message);
+            $uid = CommonFunc::getglobal('uid');
+            $ip = CommonFunc::getglobal('clientip');
+
+            $user = '<b>User:</b> uid='.intval($uid).'; IP='.$ip.'; RIP:'.$_SERVER['REMOTE_ADDR'];
+            $uri = 'Request: '.CommonFunc::dhtmlspecialchars(KoError::clear($_SERVER['REQUEST_URI']));
+            $time = CommonFunc::dgmdate($time);
+            $message = "<?PHP exit;?>\t{$time}\t$message\t$hash\t$user $uri\n";
+            if($fp = @fopen($file, 'rb+')) {
+                $lastlen = 50000;
+                //$maxtime = 60 * 10;
+                $maxtime = 1;
+                $offset = filesize($file) - $lastlen;
+                if($offset > 0) {
+                    fseek($fp, $offset);
+                }
+                if($data = fread($fp, $lastlen)) {
+                    $array = explode("\n", $data);
+                    if(is_array($array)) foreach($array as $key => $val) {
+                        $row = explode("\t", $val);
+                        if($row[0] != '<?PHP exit;?>') continue;
+                        if($row[3] == $hash && ($row[1] > $time - $maxtime)) {
+                            return;
+                        }
+                    }
+                }
+            }
+            error_log($message, 3, $file);
+        }
+    }
 
     public static function template_error($message, $tplname) {
         $message = "模版文件未找到或者无法访问";
@@ -104,7 +140,7 @@ class KoError
         $errormsg .= "<br />";
         $errormsg .= '<b>PHP:</b> '.$logtrace;
 
-        //KoError::write_error_log($errormsg);
+        KoError::write_error_log($errormsg);
         exit();
 
     }

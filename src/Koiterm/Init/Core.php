@@ -24,7 +24,7 @@ class Core
     const in_ashu = true;
     public function __construct()
     {
-        error_reporting(E_ALL);
+        error_reporting(E_ALL || ~E_NOTICE);
         define('ashu_root',substr(dirname(__FILE__),0,-12));
         set_exception_handler(array('\Koiterm\Init\Core','handleException'));
         if(ashu_core_debug){
