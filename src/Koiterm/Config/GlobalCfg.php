@@ -106,7 +106,7 @@ class GlobalCfg{
         $_config['wx']['appsecret'] = '447daefb28de157dc8dff7163f0b2e07';
 
 // ---------------------------  CONFIG Log   --------------------------- //
-        $_config['log']['filepath'] = ashu_root .'./app/data/log'.date("Ym").'_errorlog.php';
+        $_config['log']['filepath'] = $_SERVER['DOCUMENT_ROOT'].'/../app/data/log/log'.date("Ym").'_errorlog.php';
 
 
 // -------------------  THE END  -------------------- //

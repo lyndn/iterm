@@ -35,10 +35,12 @@ class KoError
 
             $user = '<b>User:</b> uid='.intval($uid).'; IP='.$ip.'; RIP:'.$_SERVER['REMOTE_ADDR'];
             $uri = 'Request: '.CommonFunc::dhtmlspecialchars(KoError::clear($_SERVER['REQUEST_URI']));
+            $time = CommonFunc::dgmdate($time);
             $message = "<?PHP exit;?>\t{$time}\t$message\t$hash\t$user $uri\n";
-            if($fp = @fopen($file, 'rb')) {
+            if($fp = @fopen($file, 'rb+')) {
                 $lastlen = 50000;
-                $maxtime = 60 * 10;
+                //$maxtime = 60 * 10;
+                $maxtime = 1;
                 $offset = filesize($file) - $lastlen;
                 if($offset > 0) {
                     fseek($fp, $offset);
