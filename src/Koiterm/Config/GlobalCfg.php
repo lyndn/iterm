@@ -1,5 +1,6 @@
 <?php
 namespace Koiterm\Config;
+
 class GlobalCfg{
     static $config;
     public static function getCfg()
@@ -103,6 +104,10 @@ class GlobalCfg{
 // ---------------------------  CONFIG WEIXIN   --------------------------- //
         $_config['wx']['appid'] = 'wx97e311bec162a049';
         $_config['wx']['appsecret'] = '447daefb28de157dc8dff7163f0b2e07';
+
+// ---------------------------  CONFIG Log   --------------------------- //
+        $_config['log']['filepath'] = ashu_root .'./app/data/log'.date("Ym").'_errorlog.php';
+
 
 // -------------------  THE END  -------------------- //
         return self::$config;
