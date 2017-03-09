@@ -8,7 +8,7 @@ class GlobalCfg{
         static $_config = array();
         self::$config = &$_config;
 // ----------------------------  CONFIG DB  ----------------------------- //
-        $_config['db']['1']['dbhost'] = 'localhost:8889';
+        $_config['db']['1']['dbhost'] = 'localhost';
         $_config['db']['1']['dbuser'] = 'root';
         $_config['db']['1']['dbpw'] = 'program';
         $_config['db']['1']['dbcharset'] = 'utf8';

@@ -176,7 +176,7 @@ class Ormdatabase {
     public static function quote($str, $noarray = false) {
 
         if (is_string($str))
-            return '\'' . mysql_escape_string($str) . '\'';
+            return '\'' . mysqli_escape_string($str) . '\'';
 
         if (is_int($str) or is_float($str))
             return '\'' . $str . '\'';

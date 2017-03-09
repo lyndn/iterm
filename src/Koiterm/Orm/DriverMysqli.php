@@ -55,9 +55,9 @@ class DriverMysqli
 
 	}
 
-	function _dbconnect($dbhost, $dbuser, $dbpw, $dbcharset, $dbname, $pconnect, $halt = true) {
-
-		$link = new mysqli();
+	function _dbconnect($dbhost, $dbuser, $dbpw, $dbcharset, $dbname, $pconnect, $halt = true)
+    {
+		$link = new \mysqli();
 		if(!$link->real_connect($dbhost, $dbuser, $dbpw, $dbname, null, null, MYSQLI_CLIENT_COMPRESS)) {
 			$halt && $this->halt('notconnect', $this->errno());
 		} else {

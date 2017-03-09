@@ -9,7 +9,7 @@
  * @license   www.guanlunsm.com license
  * @link      yanchao563@yahoo.com
  */
-
+//phpinfo();die;
 require './vendor/autoload.php';
 use Koiterm\Init\Core;
 $C = new Core();
