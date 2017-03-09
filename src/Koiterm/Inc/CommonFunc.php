@@ -9,12 +9,11 @@
  * @license   www.guanlunsm.com license
  * @link      yanchao563@yahoo.com
  */
-
 /**
  * 尽量不要在此文件中添加全局函数
  * 请在source/class/helper/目录下创建相应的静态函数集类文件
  * 类的静态方法可以在产品中所有地方使用，使用方法类似：helper_form::submitcheck()
- */
+ **/
 
 
 namespace Koiterm\Inc;
@@ -678,16 +677,6 @@ class CommonFunc
         $hashadd = defined('IN_ADMINCP') ? 'Only For Ashu! Admin YanChao' : '';
         return substr(md5(substr($_G['timestamp'], 0, -7).$_G['username'].$_G['uid'].$_G['authkey'].$hashadd.$specialadd), 8, 8);
     }
-<<<<<<< HEAD
-=======
-
-    /**
-     * 格式化时间
-     * @param $timestamp - 时间戳
-     * @param $format - dt=日期时间 d=日期 t=时间 u=个性化 其他=自定义
-     * @param $timeoffset - 时区
-     * @return string
-     */
 
     /**
      * 格式化时间
@@ -764,5 +753,4 @@ class CommonFunc
         }
     }
 
->>>>>>> 45b0e9c100327e621cc7b24dbc88f16e08a864e5
 }
