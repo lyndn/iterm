@@ -177,7 +177,7 @@ class Ormdatabase {
 
         if (is_string($str))
         {
-            $b = '\'' .  addslashes($str) . '\'';
+            $b = '\'' . addslashes($str) . '\'';
             return $b;
         }
 
