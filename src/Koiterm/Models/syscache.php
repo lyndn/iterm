@@ -42,7 +42,9 @@ class syscache extends Table
             }
         }
 
-        $query = DB::query('SELECT * FROM '.DB::table($this->_table).' WHERE '.DB::field('cname', $cachenames));
+        $sql= 'SELECT * FROM '.DB::table($this->_table).' WHERE '.DB::field('cname', $cachenames);
+
+        $query = DB::query($sql);
         while($syscache = DB::fetch($query)) {
             $data[$syscache['cname']] = $syscache['ctype'] ? unserialize($syscache['data']) : $syscache['data'];
             $this->_allowmem && (CommonFunc::memory('set', $syscache['cname'], $data[$syscache['cname']]));

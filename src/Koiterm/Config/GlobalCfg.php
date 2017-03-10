@@ -10,10 +10,10 @@ class GlobalCfg{
 // ----------------------------  CONFIG DB  ----------------------------- //
         $_config['db']['1']['dbhost'] = 'localhost';
         $_config['db']['1']['dbuser'] = 'root';
-        $_config['db']['1']['dbpw'] = 'program';
+        $_config['db']['1']['dbpw'] = 'dzwang**';
         $_config['db']['1']['dbcharset'] = 'utf8';
         $_config['db']['1']['pconnect'] = '0';
-        $_config['db']['1']['dbname'] = 'ycBlog';
+        $_config['db']['1']['dbname'] = 'yc_Blog';
         $_config['db']['1']['tablepre'] = 'yc_';
         $_config['db']['slave'] = '';
         $_config['db']['common']['slave_except_table'] = '';
