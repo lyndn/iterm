@@ -14,8 +14,6 @@
  * 请在source/class/helper/目录下创建相应的静态函数集类文件
  * 类的静态方法可以在产品中所有地方使用，使用方法类似：helper_form::submitcheck()
  **/
-
-
 namespace Koiterm\Inc;
 use Koiterm\Base\KoError;
 use Koiterm\Init\Core as C;
@@ -66,10 +64,19 @@ class CommonFunc
         }
     }
 
+    /**
+     * 获取微信开发参数
+     * @return mixed
+     */
     public static function getwxconfig(){
         return C::t('wechat_config')->fetch(1);
     }
 
+    /**
+     * 获取用户基本信息
+     * @param $uid
+     * @return mixed
+     */
     public static function getuserbyuid($uid) {
         static $users = array();
         if(empty($users[$uid])) {
@@ -89,7 +96,6 @@ class CommonFunc
      *
      * @global  $_G
      * @param string $key
-     *
      * @return type
      */
     public static function getglobal($key, $group = null) {
@@ -622,6 +628,10 @@ class CommonFunc
         }
     }
 
+    /**
+     * 检测移动设备
+     * @return bool|string
+     */
     public static function checkmobile() {
         global $_G;
         $mobile = array();
@@ -662,6 +672,11 @@ class CommonFunc
         }
     }
 
+    /**
+     * 蜘蛛封禁
+     * @param string $useragent
+     * @return bool
+     */
     public static function checkrobot($useragent = '') {
         static $kw_spiders = array('bot', 'crawl', 'spider' ,'slurp', 'sohu-search', 'lycos', 'robozilla');
         static $kw_browsers = array('msie', 'netscape', 'opera', 'konqueror', 'mozilla');
@@ -672,6 +687,11 @@ class CommonFunc
         return false;
     }
 
+    /**
+     * 表单hash生成
+     * @param string $specialadd
+     * @return mixed
+     */
     public static function formhash($specialadd = '') {
         global $_G;
         $hashadd = defined('IN_ADMINCP') ? 'Only For Ashu! Admin YanChao' : '';
@@ -752,5 +772,4 @@ class CommonFunc
             return gmdate($format, $timestamp);
         }
     }
-
 }
