@@ -93,7 +93,7 @@ class WeixinBaseApi{
 
     //取得网页用户授权接口中openid
     public static function get_oauth2_openid($code){
-        $row = getwxconfig();
+        $row = CommonFunc::getwxconfig(1);
         $url = "https://api.weixin.qq.com/sns/oauth2/access_token?appid=".$row['appid']."&secret=".$row['appsecret']."&code=".$code."&grant_type=authorization_code";
         $rets =  self::curl_get_contents($url);
         $ret_arr = json_decode($rets,true);

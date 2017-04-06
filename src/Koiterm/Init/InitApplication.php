@@ -15,6 +15,8 @@ use Koiterm\Inc\CommonFunc;
 use Koiterm\Config\GlobalCfg;
 use Koiterm\Orm\Db as DB;
 use Koiterm\Base\WeixinBaseApi as wx_base;
+
+
 class InitApplication
 {
     var $var = array();
